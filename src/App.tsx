@@ -1,25 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect, useState} from 'react';
 import './App.css';
+import {Route, Routes} from "react-router-dom";
+import CustomNavbar from "./components/navbar/Navbar";
+import SignUp from "./components/pages/SignUp";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
 function App() {
+  const queryClient = new QueryClient()
+  /** useState */
+  const [darkMode, setDarkMode] = useState(false)
+
+  /** useEffect */
+  useEffect(()=> {
+    const localDarkMode = localStorage.getItem('darkMode') === 'true'
+    setDarkMode(localDarkMode)
+  },[])
+
+  /** function */
+  function fnDarkMode() {
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    localStorage.setItem('darkMode', newDarkMode.toString());
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <QueryClientProvider client={queryClient}>
+    <div className={`App ${darkMode ? 'bg-dark text-light' : 'bg-light text-dark'}`} style={{minHeight : '100vh'}}>
+      <CustomNavbar darkMode={darkMode} toggleDarkMode={fnDarkMode}/>
+        <Routes>
+          <Route path='/signup' element={<SignUp darkMode={darkMode}/>}/>
+          <Route path='/login'></Route>
+          <Route path='/my'></Route>
+        </Routes>
     </div>
+      </QueryClientProvider>
   );
 }
 
